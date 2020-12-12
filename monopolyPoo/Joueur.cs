@@ -1,9 +1,9 @@
 ﻿using System;
 namespace monopolyPoo
 {
-    public class Plateau
+    public class Joueur
     {
-        public Plateau()
+        public Joueur()
         {
         }
     }
