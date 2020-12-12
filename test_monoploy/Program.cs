@@ -29,8 +29,18 @@ namespace test_monoploy
             this._position = 0;
             this._ownedPlace = null;
             this._jailRemaining = 0;
-
         }
+
+        public string Name { get { return _name; } }
+
+        public int Money { get { return _money; } set { _money = value; } }//Money possédés par le joueur
+
+        public int Position { get { return _position; } set { _position = value; } }//Position du joueur
+
+        public int[] OwnedPlace { get { return _ownedPlace; } set { _ownedPlace = value; } }//Place possédée du joueur
+
+        public int JailRemaining { get { return _jailRemaining; } set { _jailRemaining = value; } }//Tour restant pour sortir de prison
+
     }
 
     public class Case
@@ -102,6 +112,7 @@ namespace test_monoploy
             get { return _owner; }
             set { _owner = value; }
         }
+
     }
 
     class Taxe : Case
@@ -109,18 +120,17 @@ namespace test_monoploy
         string _name;
         string _type;
         int _loyer;
-        bool _isByable;
 
         public Taxe(string name, string type, int loyer) : base (name, type)
         {
-                this._loyer = loyer;
-                this._isByable = false; 
+            this._loyer = loyer;
         }
 
         public int Loyer // getseter loyer
         {
             get { return _loyer; }
         }
+
     }
 
     class MainClass
