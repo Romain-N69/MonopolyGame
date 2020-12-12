@@ -332,7 +332,7 @@ namespace test_monoploy
 
                     else if (myPlateau.Cases[players[index].Position].IsByable == false &&
                         myPlateau.Cases[players[index].Position].Owner != players[index].Name)
-                    {// case deja acheter mais pas proprio
+                    {// case deja acheter mais pas proprio.
                         players[index].Money -= myPlateau.Cases[players[index].Position].Loyer; // prend le loyé au locataire
                         int tmpIndex = players.FindIndex(a => a.Name == myPlateau.Cases[players[index].Position].Owner);
                         players[tmpIndex].Money += myPlateau.Cases[players[index].Position].Loyer;//done le loyé au proprio
