@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test_monop_without_gui", "test_monop_without_gui\test_monop_without_gui.csproj", "{BDBF32E9-F6EC-4545-B356-84F930E4A4B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|anycpu = Debug|anycpu
+		Release|anycpu = Release|anycpu
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BDBF32E9-F6EC-4545-B356-84F930E4A4B4}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{BDBF32E9-F6EC-4545-B356-84F930E4A4B4}.Debug|anycpu.Build.0 = Debug|anycpu
+		{BDBF32E9-F6EC-4545-B356-84F930E4A4B4}.Release|anycpu.ActiveCfg = Release|anycpu
+		{BDBF32E9-F6EC-4545-B356-84F930E4A4B4}.Release|anycpu.Build.0 = Release|anycpu
+	EndGlobalSection
+EndGlobal
