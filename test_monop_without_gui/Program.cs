@@ -341,19 +341,12 @@ namespace test_monoploy
 
 
                     }
-                    else if (myPlateau.Cases[players[index].Position].IsByable == false &&
-                                myPlateau.Cases[players[index].Position].Owner == players[index].Name &&
-                                players[index].Money >= myPlateau.Cases[players[index].Position].Loyer) // deja acheté et proprio 
+                    else // deja acheté et proprio 
                     {
                         Console.WriteLine("Vous etes chez vous.");
                         //ajouter possibilité de construire des maison.
                     }
-                    else
-                    {
-                        Console.WriteLine(myPlateau.Cases[players[index].Position].IsByable);
-                        Console.WriteLine(myPlateau.Cases[players[index].Position].Owner);
-                        Console.WriteLine(myPlateau.Cases[players[index].Position].Loyer);
-                    }
+
                     break;
                 case "taxe":
                     players[index].Money -= myPlateau.Cases[players[index].Position].Loyer;
