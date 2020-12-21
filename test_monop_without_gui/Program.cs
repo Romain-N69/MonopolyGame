@@ -164,14 +164,18 @@ namespace test_monop_without_gui
     {
         //public object[] Cases { get; private set; }
         public int[] Des { get; set; }
-    public Propriete[] Cases { get; private set; }
+        public Propriete[] Cases { get; private set; }
         public List<Joueur> Joueurs { get; }
         public int ParcGratuit { get; set; }
+        public int DoublAmount { get; set; }
+        public bool exitDoubleBoucle { get; set; }
 
 
         public Plateau(List<Joueur> joueur)
         {
             Joueurs = joueur;
+            DoublAmount = 0;
+            exitDoubleBoucle = false;
             Cases = generateCases();
             Des = new int[2];
         }
@@ -243,37 +247,56 @@ namespace test_monop_without_gui
         {
             int nbPlayers = 0;
             int j = 0;
-            string[] listOfItems = { "Chat", "Bateau", "Voiture", "Mr.Monopoly", "Chapeau", "De a coudre", "Brouette", "Fer a repasser", "Licorne qui Dab" };
-            while (nbPlayers < 1) {
+            string[] listOfItems = new string[] { "Chat", "Bateau", "Voiture", "Mr.Monopoly", "Chapeau", "De a coudre", "Brouette", "Fer a repasser", "Licorne qui Dab", "Chien", "Ballon de foot", "Robo", "Snowboard", "Train" };
+            // object[,] listOfItems = new object[,] { { "Chat", 0 }, { "Bateau", 1 }, { "Voiture", 2 }, { "Mr.Monopoly", 3 }, { "Chapeau", 4 }, { "De a coudre", 5 },
+            while (nbPlayers < 2 || nbPlayers > 14)
+            {
                 Console.Clear();
-                Console.Write("Saisissez le nombre de joueurs : ");
+                Console.Write("Saisissez le nombre de joueurs (2 a 14): ");
                 nbPlayers = Int32.Parse(Console.ReadLine()); //getnbPlayers
             }
             List<Joueur> players = new List<Joueur>();
             for (int i = 0; i < nbPlayers; i++)
             {
+                Console.Clear();
                 Console.WriteLine("Nom du joueur " + (i + 1) + " : ");
                 string name = Console.ReadLine(); //get name
 
-                Console.WriteLine("Choisisez un pion " + (i + 1) + " : ");
-                foreach ( string pion in listOfItems)
+                Console.Clear();
+                Console.WriteLine("Choisisez un pion pour  " + name + " : ");
+                foreach (string pion in listOfItems)
                 {
-                    Console.WriteLine(j+ ") " + pion);
+                    Console.WriteLine(j + ") " + pion);
                     j++;
-                        
+
                 }
                 j = 0;
-                string item = listOfItems[Convert.ToInt64(Console.ReadLine())]; //get name
+                long choose = Convert.ToInt64(Console.ReadLine());
+                string item = listOfItems[choose]; //get name
                 Console.WriteLine(item);
 
                 Joueur tmp = new Joueur(name, item);
                 players.Add(tmp);
+
+                string[] copyStrArr = new string[listOfItems.Length - 1];
+
+                // copy the elements before the found index
+                for (int k = 0; k < choose; k++)
+                {
+                    copyStrArr[k] = listOfItems[k];
+                }
+
+                // copy the elements after the found index
+                for (int l = (int)Convert.ToInt64(choose); l < copyStrArr.Length; l++)
+                {
+                    copyStrArr[l] = listOfItems[l + 1];
+                }
+                listOfItems = copyStrArr;
             }
             Console.Clear();
             return players;
         }
 
-        
         public static void printMapStats(Plateau myPlateau, List<Joueur> players)
         {
             foreach(Propriete item in myPlateau.Cases)
@@ -309,6 +332,21 @@ namespace test_monop_without_gui
             return (list);
         }
 
+        public static (Plateau _myPlateau, List<Joueur> _players) ResetPlayerProperty(Plateau myPlateau, List<Joueur> players, int index)
+        {
+            for(int i = 0; i < 40 ;i++) {
+                if (myPlateau.Cases[i].Owner == players[index].Name)
+                {
+                    Console.WriteLine("La propriete " + myPlateau.Cases[i].Name + " est de nouveau disponiblea l'achat");
+                    myPlateau.Cases[i].House = 0;
+                    myPlateau.Cases[i].IsByable = true;
+                    myPlateau.Cases[i].IsHypoteque = false;
+                    myPlateau.Cases[i].Owner = null;
+                }
+            }
+            return (myPlateau, players);
+        }
+
         public static void DisplayInfoPreRound(Plateau myPlateau, List<Joueur> players, int index)
         {
             Console.WriteLine("------------------------------------------------------------------------------------------------------------");
@@ -324,7 +362,7 @@ namespace test_monop_without_gui
                     Console.WriteLine("Vous etiez chez : " + myPlateau.Cases[players[index].PreviousPosition].Owner);
                 }
             } else {
-                Console.WriteLine("Anciene position : Prison");
+                Console.WriteLine("Vous etiez en prison.");
             }
             Console.WriteLine("------------------------------------------------------------------------------------------------------------");
         }
@@ -443,7 +481,7 @@ namespace test_monop_without_gui
                                 players[destLoyer].Money += myPlateau.Cases[players[index].Position].Loyer[myPlateau.Cases[players[index].Position].House];//done le loyé au proprio
                                 Console.WriteLine("vous donnez " + myPlateau.Cases[players[index].Position].Loyer[myPlateau.Cases[players[index].Position].House] + "$ a " + myPlateau.Cases[players[index].Position].Owner);
                             }
-                            if (players[index].Money < 0) { players[index].IsInGame = false; Console.WriteLine("Faillite. Vous etes elimine"); }
+                            if (players[index].Money < 0) { players[index].IsInGame = false; Console.WriteLine("Faillite. Vous etes elimine"); (myPlateau, players) = ResetPlayerProperty(myPlateau, players, index); }
                         }
                     }
                     else //chez sois
@@ -457,7 +495,7 @@ namespace test_monop_without_gui
                     players[index].Money -= myPlateau.Cases[players[index].Position].Loyer[0];
                     myPlateau.ParcGratuit += myPlateau.Cases[players[index].Position].Loyer[0];
                     Console.WriteLine("Vous devez payer :" + myPlateau.Cases[players[index].Position].Loyer[0] + "$");
-                    if (players[index].Money < 0) { players[index].IsInGame = false; Console.WriteLine("Faillite. Vous etes elimine"); }
+                    if (players[index].Money < 0) { players[index].IsInGame = false; Console.WriteLine("Faillite. Vous etes elimine"); (myPlateau, players) = ResetPlayerProperty(myPlateau, players, index); }
                     DisplayInfoPostRound(myPlateau, players, index);
                     break;
                 case "card":
@@ -555,13 +593,18 @@ namespace test_monop_without_gui
 
         public static (Plateau _myPlateau, List<Joueur> _players) MoovePlayer(Plateau myPlateau, List<Joueur> players, int index)
         {
+            if (myPlateau.DoublAmount >= 3) // si trois double d'affilé on va en prison.
+            {
+                players[index].JailRemaining = 3;
+                players[index].Position = 10;
+            }
             if (players[index].JailRemaining > 0 && myPlateau.Des[0] == myPlateau.Des[1])
             { // release prisoner if dices double.
                 players[index].JailRemaining = 0;
             }
-            if (players[index].JailRemaining <= 0)
+            if (players[index].JailRemaining <= 0 && myPlateau.DoublAmount < 3)
             { // move player only if he is not in jail
-                players[index].Position = ((myPlateau.Des[0] + myPlateau.Des[1] + players[index].Position));
+                players[index].Position += ((myPlateau.Des[0] + myPlateau.Des[1]));
                 if (players[index].Position >= 40)
                 { // give and display 200$ to player if he pass at the start
                     players[index].Money += 200;
@@ -574,7 +617,11 @@ namespace test_monop_without_gui
         public static void DisplayMoveInfo(Plateau myPlateau, List<Joueur> players, int index)
         {
             Console.WriteLine("Des : " + myPlateau.Des[0] + " & " + myPlateau.Des[1]);
-            if (players[index].JailRemaining > 0 && myPlateau.Des[0] == myPlateau.Des[1])
+            if (myPlateau.DoublAmount >= 3) // si trois double d'affilé on va en prison.
+            {
+                Console.WriteLine("vous avez fait trois double d'affile. Vous allez en prison.");
+            }
+            if (players[index].JailRemaining > 0 && myPlateau.Des[0] == myPlateau.Des[1] && myPlateau.DoublAmount < 3)
             { // release prisoner if dices double.
                 Console.Write("Double. Libere de prison. ");
             }
@@ -582,9 +629,9 @@ namespace test_monop_without_gui
             { //say to the prisoners that he stay in jail for X more rounds
                 Console.WriteLine("Bloque en prison, deplacement impossible. " + players[index].JailRemaining + " tour(s) restant.");
             }
-            if (players[index].JailRemaining <= 0)
+            if (players[index].JailRemaining <= 0 && myPlateau.DoublAmount < 3)
             { // move player only if he is not in jail
-                if (players[index].Position >= 40)
+                if ((players[index].PreviousPosition + myPlateau.Des[0] + myPlateau.Des[1]) >= 40)
                 { // give and display 200$ to player if he pass at the start
                     Console.WriteLine("Passage par la case depart : +200$. ");
                 }
@@ -595,6 +642,7 @@ namespace test_monop_without_gui
 
         public static int RunMonopoly()
         {
+            
             List<Joueur> players = ShuffleListOfJoueur(CreateAllPlayers()); // create all the players 
             Plateau myPlateau = new Plateau(players); // initiate the plateau
             Random rnd = new Random();
@@ -605,40 +653,37 @@ namespace test_monop_without_gui
                 for (int index = 0; index < players.Count; index++) {
                     players[index].PreviousPosition = players[index].Position; players[index].PreviousMoney = players[index].Money;
                     if (players[index].IsInGame == true) {
-                        myPlateau.Des = new int[] { rnd.Next(1, 7), rnd.Next(1, 7) };
-                        //printMapStats(myPlateau, players);
-                        DisplayInfoPreRound(myPlateau, players, index);
-                        (myPlateau, players) = MoovePlayer(myPlateau, players, index);
-                        DisplayMoveInfo(myPlateau, players, index);
-                        (myPlateau, players) = InteractWithCurrentPosition(myPlateau, players, index); // interact with the player location.
-                        Console.Write("\nAppuyer sur une touche pour terminer votre tour..."); Console.ReadKey(); Console.Clear();
+                        myPlateau.exitDoubleBoucle = false;
+                        while (myPlateau.exitDoubleBoucle == false)
+                        {
+                            myPlateau.Des = new int[] { rnd.Next(1, 7), rnd.Next(1, 7) };
+                            //myPlateau.Des = new int[] { 1, 1 }; ////test
+                            DisplayInfoPreRound(myPlateau, players, index);
+                            (myPlateau, players) = MoovePlayer(myPlateau, players, index);
+                            DisplayMoveInfo(myPlateau, players, index);
+                            (myPlateau, players) = InteractWithCurrentPosition(myPlateau, players, index); // interact with the player location.
+                            if (myPlateau.Des[0] == myPlateau.Des[1] && myPlateau.DoublAmount < 3) {
+                                myPlateau.DoublAmount += 1;
+                                Console.Write("\nVous avez fait un double. Appuyer sur une touche pour rejouer..."); Console.ReadKey(); Console.Clear();
+                            }
+                            else {
+                                myPlateau.DoublAmount = 0;
+                                myPlateau.exitDoubleBoucle = true;
+                                Console.Write("\nAppuyer sur une touche pour terminer votre tour..."); Console.ReadKey(); Console.Clear();
+                            }
+                        }
+                        //printMapStats(myPlateau, players); 
                     }
                 }
-
-                //endGame = true;
             }
-            foreach (Joueur item in players) {
-                if (item.IsInGame == true) {
-                    Console.Clear();
-                    Console.Write(item.Name + " A gagner la partie.Bravo !");
-                }
-            }
-            Console.Write("\nAppuyer sur Q pour terminer le programme...");
-            for (ConsoleKeyInfo cki = Console.ReadKey(); cki.Key.ToString() != "Q"; cki = Console.ReadKey()) {
-                Console.Clear();
-                Console.Write("\nAppuyer sur Q pour terminer le programme...");
-            }
+            foreach (Joueur item in players) { if (item.IsInGame == true) { Console.Clear(); Console.Write(item.Name + " A gagner la partie.Bravo !"); } }
+            Console.Write("\nAppuyer sur Q pour terminer le programme..."); for (ConsoleKeyInfo cki = Console.ReadKey(); cki.Key.ToString() != "Q"; cki = Console.ReadKey()) { Console.Clear(); Console.Write("\nAppuyer sur Q pour terminer le programme..."); }
             return (0);
         }
 
         public static void Main(string[] args)
         {
-            //Application.Init();
-            //MainWindow win = new MainWindow();
-            //win.Show();
-            //Application.Run();
             RunMonopoly();
-           
         }
     }
 }
