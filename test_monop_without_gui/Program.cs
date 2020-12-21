@@ -1,6 +1,5 @@
 ﻿using System;
-//using Gtk;
-using System.Runtime.CompilerServices;
+//using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -243,6 +242,8 @@ namespace test_monop_without_gui
         public static List<Joueur> CreateAllPlayers()
         {
             int nbPlayers = 0;
+            int j = 0;
+            string[] listOfItems = { "Chat", "Bateau", "Voiture", "Mr.Monopoly", "Chapeau", "De a coudre", "Brouette", "Fer a repasser", "Licorne qui Dab" };
             while (nbPlayers < 1) {
                 Console.Clear();
                 Console.Write("Saisissez le nombre de joueurs : ");
@@ -251,10 +252,20 @@ namespace test_monop_without_gui
             List<Joueur> players = new List<Joueur>();
             for (int i = 0; i < nbPlayers; i++)
             {
-                Console.Write("nom du joueur " + (i + 1) + " : ");
+                Console.WriteLine("Nom du joueur " + (i + 1) + " : ");
                 string name = Console.ReadLine(); //get name
-                Console.Write("item du joueur " + (i + 1) + " : ");
-                string item = Console.ReadLine(); //get name
+
+                Console.WriteLine("Choisisez un pion " + (i + 1) + " : ");
+                foreach ( string pion in listOfItems)
+                {
+                    Console.WriteLine(j+ ") " + pion);
+                    j++;
+                        
+                }
+                j = 0;
+                string item = listOfItems[Convert.ToInt64(Console.ReadLine())]; //get name
+                Console.WriteLine(item);
+
                 Joueur tmp = new Joueur(name, item);
                 players.Add(tmp);
             }
@@ -588,9 +599,8 @@ namespace test_monop_without_gui
             Plateau myPlateau = new Plateau(players); // initiate the plateau
             Random rnd = new Random();
 
-            Console.Write("\nAppuyer sur une touche pour commencer...");
-            Console.ReadKey();
-            Console.Clear();
+            Console.Write("\nAppuyer sur une touche pour commencer..."); Console.ReadKey(); Console.Clear();
+
             while (InGamePlayer(players) > 1) {
                 for (int index = 0; index < players.Count; index++) {
                     players[index].PreviousPosition = players[index].Position; players[index].PreviousMoney = players[index].Money;
@@ -601,11 +611,7 @@ namespace test_monop_without_gui
                         (myPlateau, players) = MoovePlayer(myPlateau, players, index);
                         DisplayMoveInfo(myPlateau, players, index);
                         (myPlateau, players) = InteractWithCurrentPosition(myPlateau, players, index); // interact with the player location.
-                        //Console.WriteLine(myPlateau.Cases[players[i].Position].Name);///////////////////
-                        Console.Write("\nAppuyer sur une touche pour terminer votre tour...");
-                        Console.ReadKey();
-                        Console.Clear();
-                        
+                        Console.Write("\nAppuyer sur une touche pour terminer votre tour..."); Console.ReadKey(); Console.Clear();
                     }
                 }
 
@@ -619,8 +625,8 @@ namespace test_monop_without_gui
             }
             Console.Write("\nAppuyer sur Q pour terminer le programme...");
             for (ConsoleKeyInfo cki = Console.ReadKey(); cki.Key.ToString() != "Q"; cki = Console.ReadKey()) {
-                //Console.Clear();
-                //Console.Write("\nAppuyer sur Q pour terminer le programme...");
+                Console.Clear();
+                Console.Write("\nAppuyer sur Q pour terminer le programme...");
             }
             return (0);
         }
